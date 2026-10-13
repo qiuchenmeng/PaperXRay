@@ -58,12 +58,12 @@ paste default-prompt to help you read the reference.
 ## 两个功能如何配合
 
 ```text
- **prompt**
+   默认提示词
    prompts/default-prompt.md  ──粘贴──▶  论文阅读会话中的 LLM 行为
                    ▲
                    │ 换成更贴合自己的版本
                    │
- **SKILL**（交互反馈并生成定制化成品）
+   交互反馈生成的定制化成品
    data/reference.json  ──▶  prompts/derive-prompt.md  ──归纳──▶  prompts/runtime-prompt-personalized.md
 ```
 

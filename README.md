@@ -56,12 +56,12 @@ As you give feedback, the skill appends it to `data/reference.json`; when you as
 ## How the Two Features Work Together
 
 ```text
- **Prompt**
+  Default Prompt
    prompts/default-prompt.md  --paste-->  LLM behavior in a paper-reading session
                    ^
                    | replace with a version tailored to you
                    |
- **Skill** (collects interactive feedback and produces a personalized prompt)
+  Collects interactive feedback and produces a personalized prompt
    data/reference.json  -->  prompts/derive-prompt.md  --distill-->  prompts/runtime-prompt-personalized.md
 ```
 
