@@ -1,20 +1,26 @@
-# PaperXRay · AI Assistant Reference Reading (SARR)
+# PaperXRay 
+## AI Assistant Reference Reading (SARR)
 
-motivation: 你是否也觉得 LLM 给的回答太长？你是否也觉得重要信息只有一点，但是有很多冗余的信息？你是否也担心冗余的信息会污染你的上下文？你是否会因为llm给的过长的回答导致自己不想认真看？
-如果你也深受这些困惑，请选择我们的这款skill,我们旨在让模型的回答用最少的必要信息，获得最充分的论文理解
-
+[insert a image to show the process]
 > **用最少的必要信息，获得最充分的论文理解。**
 
 PaperXRay 是一个面向科研人员的 **AI Assistant Reference Reading Skill**。它不做最长的论文总结，也不机械地压缩回答，而是围绕研究者的**当前疑问**给出「最小充分解释」。
-能够根据研究者的关注偏好/提问的内容和对回答的反馈，迭代更加适合研究者的论文阅读prompt,实现复利，让你的模型越来越懂你在问什么，你的关注点是什么
 
-它提供两个功能，各对应一份运行 Prompt：
+它能够根据研究者的关注偏好/提问的内容和对回答的反馈，迭代更加适合研究者的论文阅读prompt,实现复利，让你的模型越来越懂你在问什么，你的关注点是什么
+
+## Why PaperXRay?
+ - 你是否也觉得 LLM 的回答过于冗长？
+ - 你是否也觉得冗长回答中的核心信息有限，却充斥着大量冗余内容？
+ - 你是否也担心冗余的信息会污染你的上下文信息？
+ - 你是否也曾因为回答过长，而失去了认真阅读的耐心？
+ 
+如果你也有这些困扰，不妨试试 PaperXRay！我们致力于让模型以最精炼的表达，传递最核心的信息，帮助你用最少的必要信息，实现最充分的论文理解。
+## Quick Start
 
 | 内容 | 面向 | 成品 |
 | --- | --- | --- |
-| Prompt | AI小白 | `prompts/default-prompt.md` · AI-Assistant-Reference-Reading prompt，粘贴即用 |
+| Prompt | AI小白 | `prompts/default-prompt.md` · AI-Assistant-Reference-Reading prompt，**Just Paste it to your LLM** |
 | SKILL  | 开发者 | `prompts/runtime-prompt-personalized.md` · 根据你向AI提问的问题生成的你的定制化 AI-Assistant-Reference-Reading prompt |
-
 
 ---
 
