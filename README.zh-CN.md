@@ -1,23 +1,26 @@
-# PaperXRay · SI-Assistant-Reference-Reader (SARR)
+# PaperXRay · AI Assistant Reference Reading (SARR)
+
+motivation: 你是否也觉得 LLM 给的回答太长？你是否也觉得重要信息只有一点，但是有很多冗余的信息？你是否也担心冗余的信息会污染你的上下文？你是否会因为llm给的过长的回答导致自己不想认真看？
+如果你也深受这些困惑，请选择我们的这款skill,我们旨在让模型的回答用最少的必要信息，获得最充分的论文理解
 
 > **用最少的必要信息，获得最充分的论文理解。**
 
-PaperXRay 是一个面向科研人员的 **SI-Assistant 论文阅读 Skill**。它不做最长的论文总结，也不机械地压缩回答，而是围绕研究者的**当前疑问**给出「最小充分解释」。
-能够根据研究者的关注偏好/提问的内容和对回答的反馈，迭代更加适合研究者的论文阅读prompt,实现复利，实现模型越来越懂你在问什么
+PaperXRay 是一个面向科研人员的 **AI Assistant Reference Reading Skill**。它不做最长的论文总结，也不机械地压缩回答，而是围绕研究者的**当前疑问**给出「最小充分解释」。
+能够根据研究者的关注偏好/提问的内容和对回答的反馈，迭代更加适合研究者的论文阅读prompt,实现复利，让你的模型越来越懂你在问什么，你的关注点是什么
 
 它提供两个功能，各对应一份运行 Prompt：
 
 | 内容 | 面向 | 成品 |
 | --- | --- | --- |
-| Prompt | 直接使用者 | `prompts/prompt-default-for-interactive-read.md` · SI-Assistant-Reference-Reader prompt，粘贴即用 |
-| SKILL  | 开发者    | `prompts/runtime-prompt-personalized.md` · 根据你向SI提问的问题生成的你的定制化 SI-Assistant-Reference-Reader prompt |
+| Prompt | AI小白 | `prompts/default-prompt.md` · AI-Assistant-Reference-Reading prompt，粘贴即用 |
+| SKILL  | 开发者 | `prompts/runtime-prompt-personalized.md` · 根据你向AI提问的问题生成的你的定制化 AI-Assistant-Reference-Reading prompt |
 
 
 ---
 
-## SI-Assistant-Reference-Reader Prompt
+## SI-Assistant-Reference-Reading Prompt
 
-`prompts/prompt-default-for-interactive-read.md`中包含`# 中文版` 与 `# English version` 两种语言，粘贴即用。
+`prompts/default-prompt.md`中包含`# 中文版` 与 `# English version` 两种语言，粘贴即用。
 
 
 **想要更贴合自己的prompt？download our skill and generate the personlized prompt**
@@ -28,57 +31,44 @@ PaperXRay 是一个面向科研人员的 **SI-Assistant 论文阅读 Skill**。�
 
  `SKILL.md` 把你真实的阅读反馈——哪些回答有用、哪些多余、适用于什么情形——经 元-Prompt 归纳成一份 **帮助大模型理解你的阅读偏好的Prompt**。
 
-**Installation**
+**安装**
 
-git clone xxx
-
-
-**How to use**
-
-| 环节 | 文件 | 作用 |
-| --- | --- | --- |
-| 反馈样本 | `data/reference.json` | 问题、helpful / redundant 内容与适用范围 |
-| 归纳（元 Prompt） | `prompts/derive-prompt.md` | Explanation Policy Synthesizer：把反馈归纳成运行 Prompt |
-| 定制化成品 | `prompts/runtime-prompt-personalized.md` | 你的版本；覆盖它，别动默认成品 `-default.md` |
+git clone https://github.com/qiuchenmeng/PaperXRay.git
 
 **交互用法**
 
-1. 用 `@paperxray <论文.pdf> <你的问题或 ask prompt>` 开始。ask prompt 就是第一个问题；Skill 读取 PDF 后直接回答，不会强行套用预设的论文总览。
+1. 用 `@paperxray <论文.pdf> <你的问题>` 开始。Skill 会优先读取 `prompts/runtime-prompt-personalized.md`；如果该文件不存在，则自动使用 `prompts/default-prompt.md` 中的 Prompt 回答问题。
 2. 继续提问即可；你可以自然地反馈上一条回答中哪些内容有帮助、哪些多余或以后希望如何调整。也可以在同一条消息里先反馈、再问新问题。
 3. 当你明确评价回答或表达可复用偏好时，Skill 会自动将简洁记录追加到 `data/reference.json`：对应问题、明确有帮助/冗余的内容、适用范围和归纳出的偏好。普通追问和单纯致谢不会被误记为反馈；不会保存整篇论文或完整回答。
-4. 结束时说“结束本次阅读并生成新版 prompt”或“归纳偏好并生成新版本”。Skill 会先写入尚未保存的反馈，再按 `prompts/derive-prompt.md` 归纳，将双语新版保存到 `prompts/runtime-prompt-personalized.md`。**默认 Prompt 文件 `prompts/prompt-default-for-interactive-read.md` 保持不变。**
-5. 如果当前 Agent 无法读写这些文件，Skill 会明确说明，并提供待保存的反馈/新版内容，不会声称已经自动保存。
+4. 归纳偏好并生成新版本。当你的输入表达归纳阅读偏好、整理反馈或生成新版 Prompt 的意思时，Skill 会先写入尚未保存的反馈，再按 `prompts/derive-prompt.md` 归纳，将定制化 Prompt 更新到 `prompts/runtime-prompt-personalized.md`。无需结束会话；“归纳论文方法”等针对论文内容的请求仍作为阅读问题处理。
+5. 复用：`@paperxray <论文.pdf> <personalized prompt + 你的问题>` 开始，可以直接提供定制 Prompt 的正文或文件路径，Skill 会按它回答问题；不显式提供时，也会自动加载已保存的定制版。保存后的新版同样用于当前 Skill 会话的后续阅读回答。
 
-**也可以直接改**
+以上文件路径均相对于 Skill 目录。运行需要宿主加载 Skill 并提供文件读写和 PDF 访问能力；读写失败时会说明未保存内容。默认 Prompt 内容保持不变。
 
-- **改运行 Prompt**：调整 `data/reference.json` 的偏好样本，或 `prompts/derive-prompt.md` 的「必须满足」条款，再跑一次元 Prompt。
-- **改 Skill 行为**：编辑 `SKILL.md` 的规则、策略表与优先级。
+**进阶用法**
 
-全程无需微调模型，靠的是提示词归纳（ICL + 规则归纳）。
+- 个性化修改 Prompt：调整 `data/reference.json` 的偏好样本，或 `prompts/derive-prompt.md` 的「必须满足」条款，再跑一次元 Prompt。
 
-> **互动闭环**：`@paperxray` 读取论文并回答 → 读者追问、反馈 → Skill 自动整理反馈到 JSON → 读者结束时归纳并保存新版定制 Prompt → 下一次会话加载新版。
+**互动闭环**：`@paperxray` 读取论文并回答 → 读者追问、反馈 → Skill 自动整理反馈到 JSON → 读者请求归纳偏好时更新定制 Prompt → 当前或下一次阅读会话复用新版。
 
 ---
 
 ## 两个功能如何配合
 
 ```text
- 功能一 · 默认成品（开箱即用）
-   prompts/prompt-default-for-interactive-read.md  ──粘贴──▶  论文阅读会话中的 LLM 行为
+ **prompt**
+   prompts/default-prompt.md  ──粘贴──▶  论文阅读会话中的 LLM 行为
                    ▲
                    │ 换成更贴合自己的版本
                    │
- 功能二 · = SKILL.md（交互反馈并生成定制化成品）
+ **SKILL**（交互反馈并生成定制化成品）
    data/reference.json  ──▶  prompts/derive-prompt.md  ──归纳──▶  prompts/runtime-prompt-personalized.md
 ```
-
-`SKILL.md` 既是 Skill 装载时的长期行为准则，也是功能二的实体。两份运行 Prompt 都是静态指令，只靠重跑离线流程刷新。
-
 ---
 
 ## 快速开始
 
-**用默认成品（功能一）**：把 `prompts/prompt-default-for-interactive-read.md` 的一节粘贴为系统提示词，然后提问：
+**prompt**：把 `prompts/default-prompt.md` 的一节粘贴为系统提示词，然后提问：
 
 > 使用 PaperXRay 帮我理解这篇论文。先简要说明研究问题、方法和核心发现，再按我的具体问题展开。
 
@@ -90,7 +80,7 @@ git clone xxx
 
 > 这个分支结构为什么必要？论文是否证明去掉它会更差？
 
-**生成定制化成品（功能二）**：阅读时用 `@paperxray <论文.pdf> <问题>` 开始，继续提问并自然反馈；结束时要求归纳偏好并生成新版。反馈自动追加到 `data/reference.json`，新版保存到 `prompts/runtime-prompt-personalized.md`，默认成品不变。
+**生成定制化成品（功能二）**：阅读时用 `@paperxray <论文.pdf> <问题>` 开始，继续提问并自然反馈；随时要求归纳偏好并生成新版。反馈自动追加到 `data/reference.json`，新版保存到 `prompts/runtime-prompt-personalized.md`，默认成品不变。
 
 **作为 Skill 安装**：把 `SKILL.md` 放进所用 AI Agent 的 Skill 目录并启用。
 
@@ -106,7 +96,7 @@ AI-Enhance-Reader/
 ├── scripts/
 │   └── append_feedback.py       # 追加一条反馈到 reference.json，保持格式不变
 ├── prompts/
-│   ├── runtime-prompt-default.md       # 功能一：默认成品（请勿修改）
+│   ├── default-prompt.md       # 功能一：默认成品（请勿修改）
 │   ├── derive-prompt.md                # 功能二：元 Prompt
 │   └── runtime-prompt-personalized.md  # 功能二：定制化成品（按需生成）
 ├── README.md                    # 英文说明
