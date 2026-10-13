@@ -1,0 +1,171 @@
+
+{
+  "sample_id": "paperxray_pref_001",
+  "type": "response_preference_feedback",
+  "source": "KIBNN interactive paper reading session",
+  "feedback": [
+    {
+      "user_query": "Bayesian Neural Network 和 Deep Neural Network 有什么不同？输入、输出或功能有什么区别？",
+      "positive": [
+        "完整回答",
+        "区分 Bayesian Network、BNN 和 DNN",
+        "对比输入、输出、参数、训练目标和功能",
+        "结合具体任务解释预测概率与参数不确定性的区别"
+      ],
+      "negative": [],
+      "preference": "对于容易混淆的基础概念，优先提供系统性的对比解释，不必刻意缩短。"
+    },
+    {
+      "user_query": "KIBNN 是修改了损失函数吗？",
+      "positive": [
+        "完整回答",
+        "先给出明确结论",
+        "对比原始 BNN 和 KIBNN 的损失函数",
+        "分别解释知识引导先验和语义正则化",
+        "区分损失函数变化与网络输入变化"
+      ],
+      "negative": [],
+      "preference": "解释方法修改时，明确原始方法、具体修改、数学形式及其作用。"
+    },
+    {
+      "user_query": "有做消融实验观察哪部分起作用了吗？",
+      "positive": [
+        "消融实验的设计",
+        "各实验变体分别控制哪些机制",
+        "现有消融无法独立验证哪些组件的贡献"
+      ],
+      "negative": [
+        "消融实验的详细数值结果",
+        "大篇幅实验结果分析"
+      ],
+      "preference": "优先解释消融设计及其能够支持的因果结论；除非用户要求，否则省略详细数值。"
+    },
+    {
+      "user_query": "文章设计 Segment Branches 的意义是什么？",
+      "positive": [
+        "这种结构真的有必要吗？",
+        "是否有独立消融证明结构的必要性",
+        "是否存在更简单的替代设计"
+      ],
+      "negative": [
+        "其余背景、结构流程和示例解释"
+      ],
+      "preference": "对于架构设计问题，优先评估设计必要性、证据充分性和替代方案，而不是重复结构描述。"
+    },
+    {
+      "user_query": "路段数量是怎么确定的？",
+      "positive": [
+        "直接说明数量如何确定",
+        "说明数据筛选标准",
+        "给出最终路段数量"
+      ],
+      "negative": [
+        "另外一节之后的扩展内容",
+        "无关的符号规则数量统计",
+        "未经请求的架构研究讨论"
+      ],
+      "preference": "对于事实性问题，只回答确定方式、关键依据和结果，不主动延伸。"
+    },
+    {
+      "user_query": "对于新环境是否需要重新设计网络、重新训练和注入知识？",
+      "positive": [
+        "是否需要重新训练",
+        "为什么新环境可能需要重新训练",
+        "跨环境泛化能力是否存在局限",
+        "论文是否验证了跨环境迁移"
+      ],
+      "negative": [
+        "其余背景介绍",
+        "未经请求的新架构设计方案"
+      ],
+      "preference": "对于环境适配问题，优先讨论重训练需求、迁移可行性和泛化证据。"
+    },
+    {
+      "user_query": "语义正则是怎么做的？能具体解释吗？",
+      "positive": [
+        "解释语义正则的目的",
+        "完整展示并拆解 Semantic Loss 公式",
+        "说明规则触发集合、规则置信度和规则目标类别"
+      ],
+      "negative": [
+        "单条规则的详细数值计算",
+        "多条规则的复杂计算示例",
+        "交互式数值演示",
+        "未经请求的梯度扩展分析"
+      ],
+      "preference": "公式解释优先明确用途、符号含义和变量关系；默认不展开数值计算，除非理解需要或用户要求。"
+    },
+    {
+      "user_query": "怎么知道哪些规则被触发？规则预测类别与 h 和 theta 有关吗？",
+      "positive": [
+        "明确规则触发只依赖输入和固定规则库",
+        "解释规则目标类别与 BNN 预测概率的区别",
+        "通过条件判断说明规则触发过程"
+      ],
+      "negative": [
+        "第三节中冗长的双路径流程图及重复解释"
+      ],
+      "preference": "面对变量依赖关系的疑问，直接区分变量来源和依赖对象，避免重复说明已理解的计算流程。"
+    },
+    {
+      "user_query": "文中使用的规则是自拟的吗？",
+      "positive": [
+        "完整回答",
+        "解释规则的实际来源",
+        "说明决策树提取规则的过程",
+        "引用论文中的真实规则示例",
+        "区分人工规则、数据驱动规则和外部领域知识",
+        "指出规则蒸馏与辅助监督的潜在联系"
+      ],
+      "negative": [],
+      "preference": "对于方法真实性和知识来源的问题，应完整追溯原始证据，并区分作者声称与实际实现。"
+    }
+  ],
+  "learned_preferences": {
+    "primary_goal": "Minimum sufficient explanation rather than minimum response length.",
+    "high_value_content": [
+      "Conceptual distinctions",
+      "Mathematical mechanisms",
+      "Changes relative to baseline methods",
+      "Variable definitions and dependencies",
+      "Ablation design and missing controls",
+      "Architectural necessity",
+      "Retraining and generalization limitations",
+      "Evidence provenance"
+    ],
+    "low_value_content": [
+      "Unrequested numerical examples",
+      "Detailed experimental result tables",
+      "Redundant background explanations",
+      "Repeated architectural descriptions",
+      "Speculative extensions",
+      "Decorative diagrams",
+      "Unrequested alternative method proposals"
+    ],
+    "response_policy": [
+      "Answer the user's exact question first.",
+      "Expand only when needed to resolve conceptual ambiguity.",
+      "Use equations when they clarify mechanisms or dependencies.",
+      "Prioritize why a design is necessary over how it is arranged when the user already understands the structure.",
+      "Prioritize what experiments establish over enumerating all results.",
+      "Distinguish paper evidence from independent analysis.",
+      "Use explicit user feedback to update future explanation priorities.",
+      "Do not generalize a negative preference beyond its stated context."
+    ]
+  },
+  "optimization_target": {
+    "maximize": [
+      "Conceptual clarity",
+      "Mechanistic understanding",
+      "Evidence-based reasoning",
+      "Information density"
+    ],
+    "minimize": [
+      "Irrelevant detail",
+      "Repetition",
+      "Unnecessary calculations",
+      "Unsupported extrapolation"
+    ],
+    "constraint": "Preserve all information necessary for a correct and independent understanding."
+  }
+}
