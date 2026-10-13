@@ -3,7 +3,7 @@
 # Append one feedback record to data/reference.json without breaking its format.
 #
 # Examples:
-#   python append_feedback.py --query "Q" --positive "A" --negative "B" --preference "P"
+#   python append_feedback.py --query "Q" --positive "A" --negative "B" --preference "P" --scope "equation questions"
 #   python append_feedback.py --json <json-string>
 #   python append_feedback.py --file record.json
 #   python append_feedback.py --list
@@ -53,12 +53,16 @@ def make_record(payload):
     query = str(payload.get("user_query", "")).strip()
     if not query:
         raise ValueError("user_query must not be empty")
-    return {
+    record = {
         "user_query": query,
         "positive": normalise(payload.get("positive")),
         "negative": normalise(payload.get("negative")),
         "preference": str(payload.get("preference", "")).strip(),
     }
+    scope = str(payload.get("scope", "")).strip()
+    if scope:
+        record["scope"] = scope
+    return record
 
 
 def serialise(text, doc, bom):
@@ -93,6 +97,7 @@ def build_record_from_args(args):
         "positive": args.positive or [],
         "negative": args.negative or [],
         "preference": args.preference or "",
+        "scope": args.scope or "",
     }
 
 
@@ -114,6 +119,7 @@ def main(argv=None):
     parser.add_argument("--positive", action="append", default=[], help="repeatable")
     parser.add_argument("--negative", action="append", default=[], help="repeatable")
     parser.add_argument("--preference", default="", help="one-line preference rule")
+    parser.add_argument("--scope", default="", help="intent / condition where the preference applies")
     parser.add_argument("--json", dest="feed_json", help="a full record as a JSON string")
     parser.add_argument("--file", help="path to a JSON file holding one record")
     parser.add_argument("--dry-run", action="store_true", help="validate and show, do not write")
