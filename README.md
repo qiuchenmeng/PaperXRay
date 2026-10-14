@@ -3,7 +3,7 @@
 
 [Insert an image illustrating the process]
 
-> **The least necessary information for the fullest understanding of a paper.**
+> **Minimum Words. Maximum Understanding**
 
 PaperXRay is an **AI Assistant Reference Reading Skill** for researchers. Instead of producing the longest summary or mechanically shortening its answers, it offers the **minimum sufficient explanation** for the researcher's *current question*.
 
