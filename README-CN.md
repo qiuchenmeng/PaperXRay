@@ -25,28 +25,28 @@ PaperXRay 是一个面向科研人员的 **AI Assistant Reference Reading Skill*
 git clone https://github.com/qiuchenmeng/PaperXRay.git
 cd PaperXRay
 
-# Just paste the prompt to your AI agents
-cd prompts
-paste default-prompt to help you read the reference.
-
-# Or generate personlized AI-Assistant-Reference-Reading prompt,反馈自动追加到 `data/reference.json`，新版保存到 `prompts/runtime-prompt-personalized.md`。
-
-@paperxray <paper.pdf> <you problem about the paper>
+$paperxray <paper.pdf> <you problem about the paper>
 ```
 
 
 
 ## Personalized AI-Assistant-Reference-Reader Prompt
 
-`SKILL.md` 把你真实的阅读反馈——哪些回答有用、哪些多余、适用于什么情形——经_元-Prompt_归纳成一份 **帮助大模型理解你的阅读偏好的Prompt**。
+### default-prompt to help you read the reference in chat window
+cd prompts
+paste default-prompt to help you read the reference.
+
+### personalized-prompt to help you read the reference in your perference
+
+use the skill at first, the model will 把你真实的阅读反馈——哪些回答有用、哪些多余、适用于什么情形——经_元-Prompt_归纳成一份 **帮助大模型理解你的阅读偏好的Prompt**。
 
 **Method Details**
 
 1. 用 `@paperxray <论文.pdf> <你的问题>` 开始。Skill 会优先读取 `prompts/runtime-prompt-personalized.md`；如果该文件不存在，则自动使用 `prompts/default-prompt.md` 中的 Prompt 回答问题。
 2. 继续提问: 你可以自然地反馈上一条回答中哪些内容有帮助、哪些多余或以后希望如何调整。也可以在同一条消息里先反馈、再问新问题。
 3. 当你明确评价回答或表达可复用偏好时，Skill 会自动将简洁记录追加到 `data/reference.json`：对应问题、明确有帮助/冗余的内容、适用范围和归纳出的偏好。普通追问和单纯致谢不会被误记为反馈；不会保存整篇论文或完整回答。
-4. 归纳偏好并生成新版本: 当你的输入表达归纳阅读偏好、整理反馈或生成新版 Prompt 的意思时，Skill 会先写入尚未保存的反馈，再按 `prompts/derive-prompt.md` 归纳，将定制化 Prompt 更新到 `prompts/runtime-prompt-personalized.md`。无需结束会话；“归纳论文方法”等针对论文内容的请求仍作为阅读问题处理。
-5. 复用：`@paperxray <论文.pdf> <personalized prompt + 你的问题>` 开始，可以直接提供定制 Prompt 的正文或文件路径，Skill 会按它回答问题；不显式提供时，也会自动加载已保存的定制版。保存后的新版同样用于当前 Skill 会话的后续阅读回答。
+4. 归纳偏好并生成新版本: 当你的输入表达归纳阅读偏好、整理反馈或生成新版 Prompt 的意思时，Skill 会先写入这些反馈，将定制化 Prompt 更新到 `prompts/runtime-prompt-personalized.md`。无需结束会话；“归纳论文方法”等针对论文内容的请求仍作为阅读问题处理。
+5. 复用：`@paperxray <论文.pdf> <你的问题>` ，Skill 优先读取根据你知识获取偏好的 `prompts/runtime-prompt-personalized.md`来回答问题，旨在用最少的必要信息，提供给你需要的最充分的回答。
 
 
 **进阶用法**
