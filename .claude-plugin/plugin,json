@@ -1,0 +1,20 @@
+{
+  "name": "paperxray",
+  "version": "0.1.0",
+  "description": "Source-grounded academic paper reading with feedback-driven personalization.",
+  "author": {
+    "name": "Qiu Chenmeng",
+    "url": "https://github.com/qiuchenmeng"
+  },
+  "repository": "https://github.com/qiuchenmeng/PaperXRay",
+  "license": "MIT",
+  "keywords": [
+    "paper-reading",
+    "research",
+    "academic",
+    "pdf"
+  ],
+  "skills": [
+    "./skills/paperxray"
+  ]
+}

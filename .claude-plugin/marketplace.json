@@ -1,0 +1,23 @@
+{
+  "name": "paperxray",
+  "owner": {
+    "name": "Qiu Chenmeng",
+    "url": "https://github.com/qiuchenmeng"
+  },
+  "description": "PaperXRay skills for source-grounded academic paper reading.",
+  "plugins": [
+    {
+      "name": "paperxray",
+      "source": "./",
+      "description": "Interactive, source-grounded academic paper reading.",
+      "category": "research",
+      "keywords": [
+        "paper-reading",
+        "research",
+        "academic",
+        "pdf",
+        "literature-review"
+      ]
+    }
+  ]
+}
