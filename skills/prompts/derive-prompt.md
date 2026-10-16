@@ -4,7 +4,7 @@
 
 输入：
 - `existing_prompt`（可选）：读者显式提供的定制 Prompt，否则使用已保存的定制版；都没有时使用 `prompts/default-prompt.md` 作为基线。
-- `feedback_data`（必需）：下面注入的 `data/reference.json`；从 `feedback` 数组读取样本，`positive` 为正向偏好，`negative` 为负向偏好，`preference` 为归纳规则，`scope` 为适用条件（旧记录可能缺省）。不要把既有汇总当作新的读者反馈。
+- `feedback_data`（必需）：下面注入的当前用户私有 `reference.json`；从 `feedback` 数组读取样本，`positive` 为正向偏好，`negative` 为负向偏好，`preference` 为归纳规则，`scope` 为适用条件（旧记录可能缺省）。不要把既有汇总当作新的读者反馈。
 
 读者请求归纳阅读偏好、整理反馈或生成新版时调用本流程，无需结束会话；先保存待写入反馈，再读取累计样本。结果只更新定制版，不修改默认 Prompt。
 
@@ -30,7 +30,7 @@
 - 不得声称已通过某种自动训练更新权重；本流程只是 ICL + 规则归纳。跨会话需实际保存更新后的文件。
 
 输出格式：只输出 Runtime Prompt 的正文，不附任何分析、示例答案或说明。
-- 一份归纳结果需同时给出中文版与英文版，用于写入同一个文件。本流程（功能二，即 `SKILL.md`）只产出**定制化成品**：开发者据自身反馈归纳出的版本，保存为 `prompts/runtime-prompt-personalized.md`。随仓库提供的默认成品 `prompts/default-prompt.md` 本身也是用本流程跑出的一份定制化成品，仅作默认分享，请勿覆盖。
+- 一份归纳结果需同时给出中文版与英文版，用于写入同一个文件。本流程只产出**当前用户的定制化成品**，保存到用户私有状态目录的 `runtime-prompt-personalized.md`。随仓库提供的 `prompts/default-prompt.md` 是共享默认 Prompt，请勿覆盖。
 - 中文版以 `# 中文版` 开头，英文版以 `# English version` 开头，中间用 `---` 分隔；英文版标题使用 `##` 及以下层级，避免与分节标题冲突。
 - 两版内容语义等价、结构一致，仅语言不同。
 

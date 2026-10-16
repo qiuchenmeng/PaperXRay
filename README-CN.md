@@ -25,7 +25,7 @@ PaperXRay 是一个面向科研人员的 **AI Assistant Reference Reading Skill*
 git clone https://github.com/qiuchenmeng/PaperXRay.git
 cd PaperXRay
 
-$paperxray <paper.pdf> <you problem about the paper>
+@paperxray <paper.pdf> <you problem about the paper>
 ```
 
 
@@ -33,8 +33,20 @@ $paperxray <paper.pdf> <you problem about the paper>
 ## Personalized AI-Assistant-Reference-Reader Prompt
 
 ### default-prompt to help you read the reference in chat window
-cd prompts
+cd skills/prompts
 paste default-prompt to help you read the reference.
+
+### 每个用户独立保存反馈
+
+反馈和生成的定制化 Prompt 会按用户分别保存在本地，不写入共享的 Skill 或插件缓存目录。默认目录为 Windows 的 `%USERPROFILE%\\.paperxray`，macOS/Linux 的 `~/.paperxray`；也可以通过 `PAPERXRAY_HOME` 指定其他私有目录。首次使用时，反馈脚本会把仓库中的基础样本复制到该目录，不会修改共享的基础文件。
+
+该目录包含 `reference.json`，以及归纳偏好后生成的 `runtime-prompt-personalized.md`。如果多个用户共用同一个操作系统账户，可以为他们设置不同的 `PAPERXRAY_HOME`，以保持偏好隔离。
+
+可以运行下面的命令初始化或查看当前用户配置：
+
+```bash
+python skills/scripts/append_feedback.py --init
+```
 
 ### personalized-prompt to help you read the reference in your perference
 
@@ -42,46 +54,55 @@ use the skill at first, the model will 把你真实的阅读反馈——哪些�
 
 **Method Details**
 
-1. 用 `@paperxray <论文.pdf> <你的问题>` 开始。Skill 会优先读取 `prompts/runtime-prompt-personalized.md`；如果该文件不存在，则自动使用 `prompts/default-prompt.md` 中的 Prompt 回答问题。
+1. 用 `@paperxray <论文.pdf> <你的问题>` 开始。Skill 会优先读取当前用户私有目录中的 `runtime-prompt-personalized.md`；如果该文件不存在，则使用仓库提供的 `skills/prompts/default-prompt.md`。
 2. 继续提问: 你可以自然地反馈上一条回答中哪些内容有帮助、哪些多余或以后希望如何调整。也可以在同一条消息里先反馈、再问新问题。
-3. 当你明确评价回答或表达可复用偏好时，Skill 会自动将简洁记录追加到 `data/reference.json`：对应问题、明确有帮助/冗余的内容、适用范围和归纳出的偏好。普通追问和单纯致谢不会被误记为反馈；不会保存整篇论文或完整回答。
-4. 归纳偏好并生成新版本: 当你的输入表达归纳阅读偏好、整理反馈或生成新版 Prompt 的意思时，Skill 会先写入这些反馈，将定制化 Prompt 更新到 `prompts/runtime-prompt-personalized.md`。无需结束会话；“归纳论文方法”等针对论文内容的请求仍作为阅读问题处理。
-5. 复用：`@paperxray <论文.pdf> <你的问题>` ，Skill 优先读取根据你知识获取偏好的 `prompts/runtime-prompt-personalized.md`来回答问题，旨在用最少的必要信息，提供给你需要的最充分的回答。
+3. 当你明确评价回答或表达可复用偏好时，Skill 会自动将简洁记录追加到当前用户私有目录中的 `reference.json`：对应问题、明确有帮助/冗余的内容、适用范围和归纳出的偏好。普通追问和单纯致谢不会被误记为反馈；不会保存整篇论文或完整回答。
+4. 归纳偏好并生成新版本: instruct model to 归纳阅读偏好、整理反馈/生成新版 Prompt，Skill 会读取当前用户的反馈，并将定制化 Prompt 保存到当前用户私有目录中的 `runtime-prompt-personalized.md`。无需结束会话；“归纳论文方法”等针对论文内容的请求仍作为阅读问题处理。
+5. 复用：`@paperxray <论文.pdf> <你的问题>`，Skill 会优先读取当前用户私有目录中的定制化 Prompt；如果不存在，则使用默认 Prompt。
 
 
 **进阶用法**
 
-- 个性化修改 Prompt：调整 `data/reference.json` 的偏好样本，或 `prompts/derive-prompt.md` 的「必须满足」条款，再跑一次元 Prompt。
+- 个性化修改 Prompt：调整当前用户私有目录中的 `reference.json`，或修改共享的 `skills/prompts/derive-prompt.md` 的「必须满足」条款，再跑一次元 Prompt。
 
 
 ## 两个功能如何配合
 
 ```text
    默认提示词
-   prompts/default-prompt.md  ──粘贴──▶  论文阅读会话中的 LLM 行为
+   skills/prompts/default-prompt.md  ──粘贴──▶  论文阅读会话中的 LLM 行为
                    ▲
                    │ 换成更贴合自己的版本
                    │
    交互反馈生成的定制化成品
-   data/reference.json  ──▶  prompts/derive-prompt.md  ──归纳──▶  prompts/runtime-prompt-personalized.md
+   PAPERXRAY_HOME/reference.json  ──▶  skills/prompts/derive-prompt.md  ──归纳──▶  PAPERXRAY_HOME/runtime-prompt-personalized.md
 ```
 
 
 ## 文件结构
 
 ```text
-PaperXRay/
-├── SKILL.md                     # 功能二本体：由反馈归纳出定制化成品
-├── data/
-│   └── reference.json           # 反馈样本（含 KIBNN 阅读会话的 9 条）
-├── scripts/
-│   └── append_feedback.py       # 追加一条反馈到 reference.json，保持格式不变
-├── prompts/
-│   ├── default-prompt.md       # 功能一：默认成品（请勿修改）
-│   ├── derive-prompt.md                # 功能二：元 Prompt
-│   └── runtime-prompt-personalized.md  # 功能二：定制化成品（按需生成）
-├── README.md                    # 英文说明
-└── README.zh-CN.md              # 中文说明（本文件）
+PaperXRay/                      # 插件仓库根目录
+├── .claude-plugin/             # 插件市场元数据
+│   ├── marketplace.json
+│   └── plugin,json
+├── README.md                   # 英文说明
+├── README-CN.md                # 中文说明（本文件）
+└── skills/                     # 技能本体
+    ├── SKILL.md                # Skill 指令：交互式阅读 + 反馈持久化 + 定制化成品生成
+    ├── data/
+    │   └── reference.json      # 共享基础样本；首次使用时复制到每个用户的私有目录
+    ├── scripts/
+    │   └── append_feedback.py  # 追加一条反馈到 reference.json，保持格式不变
+    └── prompts/
+        ├── default-prompt.md            # 功能一：默认成品（请勿修改）
+        ├── derive-prompt.md             # 功能二：元 Prompt
+        └── prompt-for-one-time-read.md  # 一次性阅读 Prompt（研究问题→假设→方法→…）
+
+# 每个用户的私有状态（在仓库外创建）
+~/.paperxray/
+├── reference.json                    # 当前用户的反馈记录
+└── runtime-prompt-personalized.md    # 当前用户生成的定制化 Prompt（归纳后出现）
 ```
 
 ---

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Append one feedback record to data/reference.json without breaking its format.
+# Append one feedback record to the current user's reference.json without
+# modifying the shared seed data shipped with the skill.
 #
 # Examples:
 #   python append_feedback.py --query "Q" --positive "A" --negative "B" --preference "P" --scope "equation questions"
 #   python append_feedback.py --json <json-string>
 #   python append_feedback.py --file record.json
 #   python append_feedback.py --list
+#   python append_feedback.py --init
 #   python append_feedback.py --query "Q" --positive "A" --dry-run
 #
 # Format is preserved: UTF-8 (with BOM only if the original had one), the
@@ -17,6 +19,7 @@ import argparse
 import codecs
 import json
 import os
+from pathlib import Path
 import sys
 import tempfile
 
@@ -27,9 +30,35 @@ if hasattr(sys.stderr, "reconfigure"):
 
 CR = chr(13)
 LF = chr(10)
-DEFAULT_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), os.pardir, "data", "reference.json"
-)
+SKILL_DIR = Path(__file__).resolve().parent.parent
+BUNDLED_REFERENCE = SKILL_DIR / "data" / "reference.json"
+PERSONALIZED_PROMPT_NAME = "runtime-prompt-personalized.md"
+
+
+def user_state_dir():
+    """Return this user's state directory, independent of the installed plugin."""
+    override = os.environ.get("PAPERXRAY_HOME", "").strip()
+    if override:
+        return Path(os.path.expandvars(os.path.expanduser(override))).resolve()
+    return Path.home() / ".paperxray"
+
+
+def ensure_user_reference():
+    """Initialize a private copy of the bundled examples without overwriting it."""
+    state_dir = user_state_dir()
+    state_dir.mkdir(parents=True, exist_ok=True)
+    target = state_dir / "reference.json"
+    if not target.exists():
+        try:
+            with target.open("xb") as out:
+                out.write(BUNDLED_REFERENCE.read_bytes())
+                out.flush()
+                os.fsync(out.fileno())
+        except FileExistsError:
+            # Another session initialized this user's profile concurrently.
+            pass
+    return target
+
 
 def load_document(path):
     with open(path, "rb") as fh:
@@ -112,9 +141,17 @@ def resolve_record(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Append a feedback record to data/reference.json."
+        description="Manage feedback in the current user's PaperXRay state directory."
     )
-    parser.add_argument("--path", default=DEFAULT_PATH, help="target reference.json")
+    parser.add_argument(
+        "--path",
+        help="explicit reference.json path (defaults to PAPERXRAY_HOME or ~/.paperxray)",
+    )
+    parser.add_argument(
+        "--init",
+        action="store_true",
+        help="initialize the user's private feedback file and print state paths",
+    )
     parser.add_argument("--query", help="user_query")
     parser.add_argument("--positive", action="append", default=[], help="repeatable")
     parser.add_argument("--negative", action="append", default=[], help="repeatable")
@@ -126,7 +163,21 @@ def main(argv=None):
     parser.add_argument("--list", action="store_true", help="list existing records and exit")
     args = parser.parse_args(argv)
 
-    text, bom = load_document(args.path)[1:]
+    path = args.path or str(ensure_user_reference())
+    if args.init:
+        _, text, _ = load_document(path)
+        doc = json.loads(text)
+        records = doc.get("feedback")
+        if not isinstance(records, list):
+            raise SystemExit("reference.json has no feedback list")
+        state_dir = Path(path).resolve().parent
+        print("PAPERXRAY_HOME:", state_dir)
+        print("reference:", Path(path).resolve())
+        print("personalized_prompt:", state_dir / PERSONALIZED_PROMPT_NAME)
+        print("feedback_records:", len(records))
+        return 0
+
+    text, bom = load_document(path)[1:]
     doc = json.loads(text)
     records = doc.get("feedback")
     if not isinstance(records, list):
@@ -146,7 +197,7 @@ def main(argv=None):
         print("dry-run: not written; total would be", len(records))
         return 0
 
-    write_atomic(args.path, data)
+    write_atomic(path, data)
     print("appended; total records:", len(records))
     return 0
 

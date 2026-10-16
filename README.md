@@ -27,7 +27,19 @@ git clone https://github.com/qiuchenmeng/PaperXRay.git
 cd PaperXRay
 ```
 
-To use the ready-made prompt, paste the appropriate language section of `prompts/default-prompt.md` into your AI agent.
+To use the ready-made prompt, paste the appropriate language section of `skills/prompts/default-prompt.md` into your AI agent.
+
+### Per-user preferences
+
+Feedback and generated prompts are stored separately for each local user, not in the shared skill or plugin-cache directory. By default, PaperXRay uses `%USERPROFILE%\.paperxray` on Windows and `~/.paperxray` on macOS/Linux. Set `PAPERXRAY_HOME` to use another private location. On first use, the feedback script copies the bundled starter examples into that directory; it never edits the shared seed file.
+
+The directory contains `reference.json` and, after preference synthesis, `runtime-prompt-personalized.md`. Users sharing one operating-system account can set different `PAPERXRAY_HOME` values to keep profiles separate.
+
+To initialize or inspect the active profile:
+
+```bash
+python skills/scripts/append_feedback.py --init
+```
 
 To create a personalized AI Assistant Reference Reading prompt, install or enable the skill in your AI agent and start with:
 
@@ -35,7 +47,7 @@ To create a personalized AI Assistant Reference Reading prompt, install or enabl
 @paperxray <paper.pdf> <your question about the paper>
 ```
 
-As you give feedback, the skill appends it to `data/reference.json`; when you ask it to synthesize your preferences, it saves the new version to `prompts/runtime-prompt-personalized.md`.
+As you give feedback, the skill appends it to your private `PAPERXRAY_HOME/reference.json` (default: `~/.paperxray/reference.json`). When you ask it to synthesize your preferences, it saves the new version to `PAPERXRAY_HOME/runtime-prompt-personalized.md`.
 
 ## Personalized AI Assistant Reference Reading Prompt
 
@@ -43,43 +55,52 @@ As you give feedback, the skill appends it to `data/reference.json`; when you as
 
 **Method Details**
 
-1. Start with `@paperxray <paper.pdf> <your question>`. The skill first loads `prompts/runtime-prompt-personalized.md` if it exists; otherwise, it uses `prompts/default-prompt.md` to answer your question.
+1. Start with `@paperxray <paper.pdf> <your question>`. The skill first loads your private `runtime-prompt-personalized.md` if it exists; otherwise, it uses the bundled `skills/prompts/default-prompt.md`.
 2. Keep asking questions. You can naturally say which parts of the previous answer helped, which were redundant, or how you want future answers adjusted. You can give feedback and ask your next question in the same message.
-3. When you explicitly evaluate an answer or express a reusable preference, the skill automatically appends a concise record to `data/reference.json`: the question answered, what you explicitly found helpful or redundant, its scope, and a distilled preference. Ordinary follow-up questions and simple thanks are not logged as feedback; the entire paper and full answers are not stored.
-4. Ask to synthesize your preferences and generate a new version whenever you like. If your message is about summarizing your *reading preferences*, organizing feedback, or generating a new prompt, the skill first saves any pending feedback, then follows `prompts/derive-prompt.md` and updates `prompts/runtime-prompt-personalized.md`. You do not have to end the session. A request such as “summarize the paper's method” remains a paper-reading question, not a prompt-update request.
+3. When you explicitly evaluate an answer or express a reusable preference, the skill automatically appends a concise record to your private `reference.json`: the question answered, what you explicitly found helpful or redundant, its scope, and a distilled preference. Ordinary follow-up questions and simple thanks are not logged; the paper and full answers are not stored.
+4. Ask to synthesize your preferences and generate a new version whenever you like. The skill saves pending feedback, reads your private feedback file, follows the bundled `skills/prompts/derive-prompt.md`, and writes the personalized prompt to your private state directory. You do not have to end the session. A request such as “summarize the paper's method” remains a paper-reading question, not a prompt-update request.
 5. Reuse it with `@paperxray <paper.pdf> <personalized prompt + your question>`: supply the personalized prompt's text or file path directly, and the skill will use it to answer your question. If you do not supply one explicitly, it automatically loads the saved personalized version. The newly saved version also guides subsequent answers in the current skill session.
 
 **Advanced Use**
 
-- To customize the prompt further, edit the preference examples in `data/reference.json` or the mandatory requirements in `prompts/derive-prompt.md`, then run the meta-prompt again.
+- To customize the prompt further, edit your private `reference.json` or the shared synthesis instructions in `skills/prompts/derive-prompt.md`, then run the meta-prompt again.
 
 ## How the Two Features Work Together
 
 ```text
   Default Prompt
-   prompts/default-prompt.md  --paste-->  LLM behavior in a paper-reading session
+   skills/prompts/default-prompt.md  --paste-->  LLM behavior in a paper-reading session
                    ^
                    | replace with a version tailored to you
                    |
   Collects interactive feedback and produces a personalized prompt
-   data/reference.json  -->  prompts/derive-prompt.md  --distill-->  prompts/runtime-prompt-personalized.md
+   PAPERXRAY_HOME/reference.json  -->  skills/prompts/derive-prompt.md  --distill-->  PAPERXRAY_HOME/runtime-prompt-personalized.md
 ```
 
 ## File Structure
 
 ```text
-PaperXRay/
-├── SKILL.md                     # Distills feedback into a personalized prompt
-├── data/
-│   └── reference.json           # Feedback examples (including 9 from a KIBNN reading session)
-├── scripts/
-│   └── append_feedback.py       # Appends feedback to reference.json while preserving its format
-├── prompts/
-│   ├── default-prompt.md                # Ready-made default prompt (do not edit)
-│   ├── derive-prompt.md                 # Meta-prompt for preference synthesis
-│   └── runtime-prompt-personalized.md   # Personalized prompt (generated on demand)
-├── README.md                    # English guide (this file)
-└── README.zh-CN.md              # Chinese guide
+PaperXRay/                      # Plugin repository root
+├── .claude-plugin/             # Plugin marketplace metadata
+│   ├── marketplace.json
+│   └── plugin,json
+├── README.md                   # English guide (this file)
+├── README-CN.md                # Chinese guide
+└── skills/                     # The skill itself
+    ├── SKILL.md                # Skill instructions: interactive reading + feedback persistence + prompt synthesis
+    ├── data/
+    │   └── reference.json      # Shared starter examples; copied to each user's private state on first use
+    ├── scripts/
+    │   └── append_feedback.py  # Appends feedback to reference.json while preserving its format
+    └── prompts/
+        ├── default-prompt.md            # Ready-made default prompt (do not edit)
+        ├── derive-prompt.md             # Meta-prompt for preference synthesis
+        └── prompt-for-one-time-read.md  # One-shot reading prompt (research question -> hypothesis -> method -> ...)
+
+# Per-user state (created outside the repository)
+~/.paperxray/
+├── reference.json                    # This user's feedback records
+└── runtime-prompt-personalized.md    # This user's generated prompt (after synthesis)
 ```
 
 ---
