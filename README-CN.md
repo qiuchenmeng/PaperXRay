@@ -1,7 +1,7 @@
 # PaperXRay 
 ## AI Assistant Reference Reading (SARR)
 
-[insert a image to show the process]
+
 > **用最少的必要信息，获得最充分的论文理解。**
 
 PaperXRay 是一个面向科研人员的 **AI Assistant Reference Reading Skill**。它不做最长的论文总结，也不机械地压缩回答，而是围绕研究者的**当前疑问**给出「最小充分解释」。
@@ -13,12 +13,12 @@ PaperXRay 是一个面向科研人员的 **AI Assistant Reference Reading Skill*
  - 你是否也觉得LLM 回答你关于文献的问题的核心信息有限，却充斥着大量冗余内容？
  - 你是否也担心冗余的信息会污染你的上下文信息？
  - 你是否也曾因为回答过长，而失去了认真阅读的耐心？
- - 你是否也觉得现有的 ai-assistant reference reading skill 五花八门，根本不知道他们的作用机理和具体的上下文?
+ - 你是否也觉得现有的ai辅助阅读的prompt和skill五花八门，根本不知道他们的作用机理和具体的上下文?
 
 如果你也有这些困扰，不妨试试 PaperXRay！我们致力于让模型以最精炼的表达，传递最核心的信息，帮助你以最直观的方式用最少的必要信息，实现最充分的论文理解。
 
 
-## Quick Start
+## 快速开始
 
 ```
 # Clone the skill
@@ -30,7 +30,7 @@ cd PaperXRay
 
 
 
-## Personalized AI-Assistant-Reference-Reader Prompt
+## 定制化的AI文献阅读助手提示词
 
 ### default-prompt to help you read the reference in chat window
 cd skills/prompts
